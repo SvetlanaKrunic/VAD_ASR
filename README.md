@@ -165,13 +165,6 @@ Listens via microphone for 60 seconds by default. Press `Ctrl+C` to stop early.
 
 ## Output
 
-### Terminal
-
-```
-[14:32:01] TRANSCRIBED (2.3s): dobar dan kako ste
-[14:32:05] TRANSCRIBED (1.8s): ja sam student elektrotehnike
-```
-
 ### results/results.csv
 
 | Timestamp | Scenario | VAD | Latency median (ms) | Latency p95 (ms) | ASR calls/min | False tokens/s | WER (%) | CER (%) |
