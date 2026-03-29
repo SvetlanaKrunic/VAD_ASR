@@ -165,12 +165,6 @@ Listens via microphone for 60 seconds by default. Press `Ctrl+C` to stop early.
 
 ## Output
 
-### results/results.csv
-
-| Timestamp | Scenario | VAD | Latency median (ms) | Latency p95 (ms) | ASR calls/min | False tokens/s | WER (%) | CER (%) |
-|---|---|---|---|---|---|---|---|---|
-| 2024-01-15 14:32:00 | 1 | webrtc_agr2 | 312.4 | 489.1 | 18.40 | 0.03 | 8.20 | 3.10 |
-
 ### Metrics Explained
 
 | Metric | Description |
