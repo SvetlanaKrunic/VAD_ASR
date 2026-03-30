@@ -1,23 +1,21 @@
 # WebRTC VAD + Wav2Vec2 ASR Pipeline
 
----
 
-Batch and live speech recognition pipeline using WebRTC Voice Activity Detection and Wav2Vec2 acoustic models from Hugging Face.
+*Batch* and *live* automatic speech recognition (ASR) pipeline using WebRTC Voice Activity Detection (VAD) and Wav2Vec2 acoustic models from Hugging Face.
 
----
 
-## Serbian Custom dataset for testing the pipline
+## HuggingFace Serbian Custom Open Source Dataset
 
 from datasets import load_dataset
 
 ds = load_dataset("SvetlanaKrunic/NenadGugl-mudrosti")
 
----
 
-## ICIST 
+
+## ICIST - paper
 S. Krunić, “Parametar Sensitivity and Error Analysis of Voice Activity Detection on English Speech with Cross-Language Evaluation on Custom Serbian Dataset,” in Proc. Int. Conf. on Information Systems and Technologies (ICIST), Serbia, 2026.
 
----
+
 
 ## Features
 
@@ -28,7 +26,113 @@ S. Krunić, “Parametar Sensitivity and Error Analysis of Voice Activity Detect
 - CSV result logging for experiment comparison
 - Supports MP3 and WAV input (auto-converted via ffmpeg)
 
----
+
+
+## Requirements
+
+- Python 3.10+
+- ffmpeg installed and available on PATH
+```bash
+pip install torch torchaudio transformers webrtcvad numpy pyaudio
+```
+
+## Data Preparation
+
+Place your audio files in the appropriate `data/raw/scenario_X/` folder.
+
+Reference transcripts go in `data/references/scenario_X.txt` — one sentence per line, matching the alphabetical order of the audio files.
+
+Example `scenario_1.txt`:
+```
+dobar dan kako ste
+ja sam student elektrotehnike
+```
+
+The pipeline automatically converts all MP3 and WAV files to 16kHz mono WAV before processing.
+
+
+## Usage
+
+### Batch Evaluation
+
+Run all scenarios with default VAD aggressiveness:
+
+```bash
+python run_pipeline.py
+```
+
+Run a specific scenario:
+
+```bash
+python run_pipeline.py --scenario 1
+```
+
+Run with a specific VAD aggressiveness level:
+
+```bash
+python run_pipeline.py --scenario 2 --vad-aggressiveness 3
+```
+
+#### Configuration
+
+All parameters are centralized in `utils/config.py`. Edit this file to change model, VAD behavior, or paths.
+
+
+#### Available arguments:
+
+| Argument | Values | Default | Description |
+|---|---|---|---|
+| `--scenario` | `1`, `2`, `3` | all | Scenario ID to evaluate |
+| `--vad-aggressiveness` | `0`, `1`, `2`, `3` | `2` | WebRTC VAD aggressiveness |
+
+Results are saved to `results/results.csv` automatically.
+
+### Live Transcription
+
+```bash
+python live_vad_asr.py
+```
+
+Listens via microphone for 60 seconds by default. Press `Ctrl+C` to stop early.
+
+
+
+## Output
+
+### Metrics Explained
+
+| Metric | Description |
+|---|---|
+| **WER** | Word Error Rate — lower is better. Industry target: <10% |
+| **CER** | Character Error Rate — finer-grained than WER |
+| **Latency median** | Median time from end of speech to ASR result, in ms |
+| **Latency P95** | 95th percentile latency — worst case for 95% of utterances |
+| **ASR calls/min** | System throughput |
+| **False tokens/s** | Hallucinated words per second — lower is better |
+
+### Live vs Batch
+
+| | Live (`live_vad_asr.py`) | Batch (`run_pipeline.py`) |
+|---|---|---|
+| Input | Microphone | Audio files |
+| Output | Terminal only | Terminal + CSV |
+| Evaluation | No | WER, CER, latency |
+| Use case | Real-time demo | Experiment comparison |
+
+## Model
+
+The default model is [`classla/wav2vec2-xls-r-parlaspeech-hr-lm`](https://huggingface.co/classla/wav2vec2-xls-r-parlaspeech-hr-lm), trained on South Slavic speech (Serbian, Croatian, Bosnian).
+
+To use a different model, change `MODEL_NAME` in `utils/config.py`:
+
+```python
+MODEL_NAME = "facebook/wav2vec2-large-xlsr-53"  # multilingual
+MODEL_NAME = "openai/whisper-small"              # alternative architecture
+```
+
+The model is downloaded automatically on first run and cached in `~/.cache/huggingface/`.
+
+
 
 ## Project Structure
 
@@ -80,128 +184,3 @@ vad_asr/
 │
 ├── run_pipeline.py                  # batch evaluation entry point
 └── live_vad_asr.py                  # live microphone entry point
-```
-
----
-
-## Requirements
-
-- Python 3.10+
-- ffmpeg installed and available on PATH
-- CUDA-capable GPU recommended (CPU inference supported but slow)
-
-Install Python dependencies:
-
-```bash
-pip install torch torchaudio transformers webrtcvad numpy pyaudio
-```
-
-Install ffmpeg:
-
-- **Windows**: download from https://ffmpeg.org/download.html and add to PATH
-- **Linux**: `sudo apt install ffmpeg`
-- **macOS**: `brew install ffmpeg`
-
----
-
-## Configuration
-
-All parameters are centralized in `utils/config.py`. Edit this file to change model, VAD behavior, or paths.
-
----
-
-## Data Preparation
-
-Place your audio files in the appropriate `data/raw/scenario_X/` folder.
-
-Reference transcripts go in `data/references/scenario_X.txt` — one sentence per line, matching the alphabetical order of the audio files.
-
-Example `scenario_1.txt`:
-```
-dobar dan kako ste
-ja sam student elektrotehnike
-```
-
-The pipeline automatically converts all MP3 and WAV files to 16kHz mono WAV before processing.
-
----
-
-## Usage
-
-### Batch Evaluation
-
-Run all scenarios with default VAD aggressiveness (2):
-
-```bash
-python run_pipeline.py
-```
-
-Run a specific scenario:
-
-```bash
-python run_pipeline.py --scenario 1
-```
-
-Run with a specific VAD aggressiveness level:
-
-```bash
-python run_pipeline.py --scenario 2 --vad-aggressiveness 3
-```
-
-Available arguments:
-
-| Argument | Values | Default | Description |
-|---|---|---|---|
-| `--scenario` | `1`, `2`, `3` | all | Scenario ID to evaluate |
-| `--vad-aggressiveness` | `0`, `1`, `2`, `3` | `2` | WebRTC VAD aggressiveness |
-
-Results are saved to `results/results.csv` automatically.
-
-### Live Transcription
-
-```bash
-python live_vad_asr.py
-```
-
-Listens via microphone for 60 seconds by default. Press `Ctrl+C` to stop early.
-
----
-
-## Output
-
-### Metrics Explained
-
-| Metric | Description |
-|---|---|
-| **WER** | Word Error Rate — lower is better. Industry target: <10% |
-| **CER** | Character Error Rate — finer-grained than WER |
-| **Latency median** | Median time from end of speech to ASR result, in ms |
-| **Latency P95** | 95th percentile latency — worst case for 95% of utterances |
-| **ASR calls/min** | System throughput |
-| **False tokens/s** | Hallucinated words per second — lower is better |
-
----
-
-## Model
-
-The default model is [`classla/wav2vec2-xls-r-parlaspeech-hr-lm`](https://huggingface.co/classla/wav2vec2-xls-r-parlaspeech-hr-lm), trained on South Slavic speech (Serbian, Croatian, Bosnian).
-
-To use a different model, change `MODEL_NAME` in `utils/config.py`:
-
-```python
-MODEL_NAME = "facebook/wav2vec2-large-xlsr-53"  # multilingual
-MODEL_NAME = "openai/whisper-small"              # alternative architecture
-```
-
-The model is downloaded automatically on first run and cached in `~/.cache/huggingface/`.
-
----
-
-## Live vs Batch
-
-| | Live (`live_vad_asr.py`) | Batch (`run_pipeline.py`) |
-|---|---|---|
-| Input | Microphone | Audio files |
-| Output | Terminal only | Terminal + CSV |
-| Evaluation | No | WER, CER, latency |
-| Use case | Real-time demo | Experiment comparison |
