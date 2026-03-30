@@ -1,6 +1,18 @@
 # WebRTC VAD + Wav2Vec2 ASR Pipeline
 
 Batch and live speech recognition *pipeline* using WebRTC Voice Activity Detection and Wav2Vec2 acoustic models from Hugging Face.
+---
+
+## Serbian Custom dataset for testing the pipline
+
+from datasets import load_dataset
+
+ds = load_dataset("SvetlanaKrunic/NenadGugl-mudrosti")
+
+---
+
+## ICIST 
+S. Krunić, “Parametar Sensitivity and Error Analysis of Voice Activity Detection on English Speech with Cross-Language Evaluation on Custom Serbian Dataset,” in Proc. Int. Conf. on Information Systems and Technologies (ICIST), Serbia, 2026.
 
 ---
 
@@ -92,17 +104,6 @@ Install ffmpeg:
 ## Configuration
 
 All parameters are centralized in `utils/config.py`. Edit this file to change model, VAD behavior, or paths.
-
-| Parameter | Default | Description |
-|---|---|---|
-| `SAMPLE_RATE` | `16000` | Audio sample rate in Hz. Do not change — required by WebRTC VAD and Wav2Vec2. |
-| `CHUNK_DURATION_MS` | `30` | VAD window size in ms. WebRTC VAD accepts only 10, 20, or 30. |
-| `VAD_AGGRESSIVENESS` | `2` | WebRTC VAD aggressiveness: 0 (least) to 3 (most aggressive). |
-| `VAD_PADDING_MS` | `600` | Look-back buffer in ms. Prevents clipping the start of utterances. |
-| `VAD_TRIGGER_LEVEL` | `0.8` | Fraction of frames in the buffer that must be speech to trigger ASR. |
-| `MIN_SPEECH_DURATION_SEC` | `0.5` | Minimum utterance duration sent to ASR. Shorter segments are discarded. |
-| `MAX_UTTERANCE_SEC` | `25` | Maximum utterance duration before forced ASR flush. |
-| `MODEL_NAME` | `classla/wav2vec2-xls-r-parlaspeech-hr-lm` | Hugging Face model name. Change to any Wav2Vec2 model. |
 
 ---
 
