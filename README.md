@@ -1,6 +1,9 @@
 # WebRTC VAD + Wav2Vec2 ASR Pipeline
 
-Batch and live speech recognition *pipeline* using WebRTC Voice Activity Detection and Wav2Vec2 acoustic models from Hugging Face.
+---
+
+Batch and live speech recognition pipeline using WebRTC Voice Activity Detection and Wav2Vec2 acoustic models from Hugging Face.
+
 ---
 
 ## Serbian Custom dataset for testing the pipline
