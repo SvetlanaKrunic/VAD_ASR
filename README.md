@@ -4,13 +4,15 @@
 *Batch* and *live* automatic speech recognition (ASR) pipeline using WebRTC Voice Activity Detection (VAD) and Wav2Vec2 acoustic models from Hugging Face.
 
 
-## HuggingFace Serbian Custom Open Source Dataset
+## Serbian Custom Open Source Dataset
 
+**HuggingFace:** https://huggingface.co/datasets/SvetlanaKrunic/NenadGugl-mudrosti
+
+```
 from datasets import load_dataset
 
 ds = load_dataset("SvetlanaKrunic/NenadGugl-mudrosti")
-
-
+```
 
 ## ICIST - paper
 S. Krunić, “Parametar Sensitivity and Error Analysis of Voice Activity Detection on English Speech with Cross-Language Evaluation on Custom Serbian Dataset,” in Proc. Int. Conf. on Information Systems and Technologies (ICIST), Serbia, 2026.
